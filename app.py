@@ -10,7 +10,7 @@ app = FastAPI(title="Hi Right Now MAX Bot")
 API_URL = "https://platform-api2.max.ru"
 
 TOKEN = os.getenv("MAX_BOT_TOKEN")
-SECRET = os.getenv("WEBHOOK_SECRET", "hi_right_now_secret")
+SECRET = "hirightnow123"
 
 WEBHOOK_URL = "https://web-production-223a3d.up.railway.app/webhook"
 

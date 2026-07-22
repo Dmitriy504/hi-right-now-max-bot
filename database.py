@@ -13,12 +13,21 @@ conn.autocommit = True
 
 cur = conn.cursor()
 
+# Пользователи
 cur.execute("""
 CREATE TABLE IF NOT EXISTS users (
     user_id BIGINT PRIMARY KEY,
     first_name TEXT,
     last_name TEXT,
     created_at TIMESTAMP DEFAULT NOW()
+)
+""")
+
+# Настройки бота
+cur.execute("""
+CREATE TABLE IF NOT EXISTS settings (
+    key TEXT PRIMARY KEY,
+    value TEXT
 )
 """)
 
@@ -36,11 +45,37 @@ def add_user(user_id, first_name="", last_name=""):
         """
         INSERT INTO users(user_id, first_name, last_name)
         VALUES (%s,%s,%s)
-        ON CONFLICT (user_id) DO NOTHING
+        ON CONFLICT (user_id)
+        DO NOTHING
         """,
         (
             user_id,
             first_name,
-            last_name
-        )
+            last_name,
+        ),
     )
+
+
+def set_admin_chat(chat_id):
+    cur.execute(
+        """
+        INSERT INTO settings(key, value)
+        VALUES ('admin_chat', %s)
+        ON CONFLICT (key)
+        DO UPDATE SET value = EXCLUDED.value
+        """,
+        (str(chat_id),),
+    )
+
+
+def get_admin_chat():
+    cur.execute(
+        "SELECT value FROM settings WHERE key='admin_chat'"
+    )
+
+    row = cur.fetchone()
+
+    if row:
+        return int(row[0])
+
+    return None

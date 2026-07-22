@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 import urllib3
+import json
 
 from max_api import send_text
 
@@ -16,11 +17,9 @@ async def root():
 @app.post("/webhook")
 async def webhook(data: dict):
 
-    import json
-
-print("=" * 60)
-print(json.dumps(data, indent=2, ensure_ascii=False))
-print("=" * 60)
+    print("=" * 60)
+    print(json.dumps(data, indent=2, ensure_ascii=False))
+    print("=" * 60)
 
     if data.get("update_type") == "message_created":
 

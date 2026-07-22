@@ -1,3 +1,4 @@
+from database import user_exists, add_user
 from fastapi import FastAPI
 import urllib3
 import json

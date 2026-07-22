@@ -1,9 +1,9 @@
-from database import user_exists, add_user
 from fastapi import FastAPI
 import urllib3
 import json
 
 from max_api import send_text
+from database import user_exists, add_user
 
 urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
@@ -38,10 +38,15 @@ async def webhook(data: dict):
     body = message.get("body", {})
     text = body.get("text", "").strip()
 
-    # Если пользователь написал "Привет"
-    if text.lower() == "привет":
+    # Новый пользователь
+    if not user_exists(user_id):
 
-        # Приветствие пользователю
+        add_user(
+            user_id,
+            first_name,
+            last_name
+        )
+
         send_text(
             chat_id,
             "👋 Привет!\n\n"
@@ -51,26 +56,39 @@ async def webhook(data: dict):
             "Я превращу это в красивый пост."
         )
 
-        # Уведомление администратора (пока в этот же чат)
+        # Пока уведомление отправляется в этот же чат.
+        # Позже заменим chat_id на ID администратора.
         send_text(
             chat_id,
-            f"🔔 Администратор\n\n"
-            f"Пользователь запустил бота.\n\n"
+            f"🔔 Новый пользователь!\n\n"
             f"👤 ID: {user_id}\n"
             f"Имя: {first_name} {last_name}"
         )
 
-    # Пока просто подтверждаем получение фотографии
+        return {"success": True}
+
+    # Повторный пользователь
+    if text.lower() == "привет":
+
+        send_text(
+            chat_id,
+            "👋 С возвращением!\n\n"
+            "Отправь фотографию и подпись.\n"
+            "Я помогу сделать красивый пост."
+        )
+
+    # Проверка вложений
     attachments = body.get("attachments", [])
 
     if attachments:
+
         print("ATTACHMENTS:")
         print(json.dumps(attachments, indent=2, ensure_ascii=False))
 
         send_text(
             chat_id,
             "📸 Фото получено!\n\n"
-            "Скоро я научусь создавать красивые посты по фотографии."
+            "Скоро я научусь анализировать изображения и создавать посты."
         )
 
     return {"success": True}

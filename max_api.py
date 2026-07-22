@@ -1,5 +1,8 @@
 import os
 import requests
+import urllib3
+
+urllib3.disable_warnings(urllib3.exceptions.InsecureRequestWarning)
 
 API_URL = "https://platform-api2.max.ru"
 
@@ -12,17 +15,21 @@ HEADERS = {
 
 
 def send_text(chat_id: int, text: str):
-    payload = {
-        "chat_id": chat_id,
+
+    body = {
         "text": text
     }
 
     r = requests.post(
         f"{API_URL}/messages",
+        params={
+            "chat_id": chat_id
+        },
         headers=HEADERS,
-        json=payload,
+        json=body,
         verify=False,
         timeout=30
     )
 
-    print("SEND:", r.status_code, r.text)
+    print("SEND:", r.status_code)
+    print(r.text)

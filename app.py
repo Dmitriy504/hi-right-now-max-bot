@@ -16,9 +16,11 @@ async def root():
 @app.post("/webhook")
 async def webhook(data: dict):
 
-    print("=" * 60)
-    print(data)
-    print("=" * 60)
+    import json
+
+print("=" * 60)
+print(json.dumps(data, indent=2, ensure_ascii=False))
+print("=" * 60)
 
     if data.get("update_type") == "message_created":
 
